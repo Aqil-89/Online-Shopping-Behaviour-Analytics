@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ShopPulse · Online Shopping Behaviour Analytics</title>
+<style>
+:root{color-scheme:dark;--bg:#000;--card:#0b0d12;--line:#1c212c;--text:#e8ecf5;--mute:#8d97ad;--blue:#1677e5;--side:#0a1a33;--field:#0f2548;--fline:#27467c;--ok:#22c55e;--bad:#ef4444;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:14px}
+.app{display:flex;min-height:100vh}
+aside{width:270px;flex:none;background:linear-gradient(180deg,#0b1d3a,#07111f);padding:18px 16px;position:sticky;top:0;height:100vh;overflow-y:auto;border-right:1px solid #12305c;transition:transform .2s}
+.brand{display:flex;gap:10px;align-items:center;font-weight:700;font-size:1.15rem;margin-bottom:16px}
+.logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#1677e5,#22d3ee);display:grid;place-items:center}
+nav button{display:flex;width:100%;gap:12px;align-items:center;background:none;border:0;color:#dbe4f5;padding:10px 12px;border-radius:9px;font:inherit;cursor:pointer;text-align:left;margin-bottom:2px}
+nav button:hover{background:#ffffff12}nav button.on{background:var(--blue);color:#fff;font-weight:600}
+hr{border:0;border-top:1px solid #1d3a6a;margin:14px 0}
+.sec{display:flex;gap:8px;align-items:center;font-weight:600;margin:0 0 8px}
+aside label{display:block;font-size:.85rem;margin:10px 0 4px}
+select{width:100%;background:var(--field);color:#fff;border:1px solid var(--fline);border-radius:8px;padding:9px 10px;font:inherit}
+.btn{width:100%;margin-top:14px;padding:11px;border:0;border-radius:8px;background:var(--blue);color:#fff;font:inherit;font-weight:600;cursor:pointer}
+.btn.ghost{background:var(--field);border:1px solid var(--fline);font-weight:400}
+.rad{display:flex;gap:8px;align-items:center;margin:6px 0;cursor:pointer}
+#status{font-size:.75rem;color:#9fb4d8;margin-top:8px;min-height:1em}
+main{flex:1;min-width:0;padding:18px}
+header{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+header h1{font-size:1.35rem;margin:0}
+#burger{display:none;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:1rem}
+#sum{color:var(--mute);font-size:.8rem;margin-left:auto}
+.grid{display:grid;gap:12px}
+.kpis{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.two{grid-template-columns:repeat(auto-fit,minmax(320px,1fr));margin-top:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;min-width:0}
+.kpi .l{color:var(--mute);font-size:.76rem}.kpi .v{font-size:1.5rem;font-weight:700;margin-top:2px}
+.kpi.hi .v{color:#4da3ff}
+h2{font-size:.95rem;margin:0 0 8px}
+.chart{position:relative;height:250px}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:7px 6px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:var(--mute);font-weight:600;font-size:.76rem}
+.tag{padding:2px 9px;border-radius:99px;font-size:.74rem}
+.y{background:#06361c;color:#4ade80}.n{background:#2a1215;color:#f87171}
+.ins{margin:0;padding-left:18px;line-height:1.8}
+.bar{height:8px;border-radius:4px;background:#1a1f2b;min-width:80px}.bar i{display:block;height:100%;border-radius:4px;background:var(--blue)}
+pre{background:#05070b;border:1px solid var(--line);border-radius:10px;padding:12px;overflow-x:auto;font-size:.78rem;line-height:1.5;margin:8px 0 0}
+.view{display:none}.view.on{display:block}
+.note{color:var(--mute);font-size:.8rem;margin:0 0 8px}
+@media(max-width:820px){aside{position:fixed;z-index:20;left:0;top:0;transform:translateX(-105%)}aside.open{transform:none}#burger{display:block}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside id="side">
+  <div class="brand"><div class="logo">🛒</div>ShopPulse</div>
+  <nav id="nav">
+    <button data-v="dashboard" class="on">🏠 Dashboard</button>
+    <button data-v="explorer">🗃️ Data Explorer</button>
+    <button data-v="behaviour">🧭 Behaviour Analysis</button>
+    <button data-v="perf">⚡ Performance Test</button>
+    <button data-v="about">ℹ️ About</button>
+  </nav>
+  <hr>
+  <div class="sec">🔻 Filters</div>
+  <label>Month</label><select id="fm"></select>
+  <label>Visitor Type</label><select id="fv"></select>
+  <label>Weekend</label><select id="fw"><option>All</option><option>Weekend</option><option>Weekday</option></select>
+  <label>Region</label><select id="fr"></select>
+  <label>Purchase Outcome</label><select id="fo"><option>All</option><option>Purchased</option><option>Not purchased</option></select>
+  <button class="btn" id="apply">Apply Filters</button>
+  <hr>
+  <div class="sec">🗄️ Data Source</div>
+  <label class="rad"><input type="radio" name="src" value="csv"> Upload CSV</label>
+  <label class="rad"><input type="radio" name="src" value="sample" checked> Use Sample Data</label>
+  <button class="btn ghost" id="pick">⬆️ Choose CSV file</button>
+  <input type="file" id="file" accept=".csv" hidden>
+  <div id="status"></div>
+</aside>
+
+<main>
+  <header><button id="burger">☰</button><h1 id="title">Dashboard</h1><span id="sum"></span></header>
+
+  <section class="view on" id="v-dashboard">
+    <div class="grid kpis" id="kpis"></div>
+    <div class="grid two">
+      <div class="card"><h2>Sessions &amp; conversion by month</h2><div class="chart"><canvas id="d1"></canvas></div></div>
+      <div class="card"><h2>Visitor type share</h2><div class="chart"><canvas id="d2"></canvas></div></div>
+      <div class="card"><h2>Conversion rate by region</h2><div class="chart"><canvas id="d3"></canvas></div></div>
+      <div class="card"><h2>Weekend vs weekday outcome</h2><div class="chart"><canvas id="d4"></canvas></div></div>
+    </div>
+    <div class="card" style="margin-top:12px"><h2>💡 Key insights</h2><ul class="ins" id="ins"></ul></div>
+  </section>
+
+  <section class="view" id="v-explorer">
+    <div class="card"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px"><h2 style="margin:0" id="exh">Sessions</h2><button class="btn ghost" id="dl" style="width:auto;margin:0 0 0 auto;padding:7px 14px;color:#fff">⬇ Download filtered CSV</button></div>
+    <div class="scroll"><table><thead><tr><th>Month</th><th>Visitor</th><th>Region</th><th>Weekend</th><th>Product pages</th><th>Product time (s)</th><th>Bounce</th><th>Exit</th><th>Page value</th><th>Outcome</th></tr></thead><tbody id="tb"></tbody></table></div></div>
+  </section>
+
+  <section class="view" id="v-behaviour">
+    <div class="grid two" style="margin-top:0">
+      <div class="card"><h2>Avg time per page type (s)</h2><div class="chart"><canvas id="b1"></canvas></div></div>
+      <div class="card"><h2>Conversion by page value</h2><div class="chart"><canvas id="b2"></canvas></div></div>
+      <div class="card"><h2>Conversion by bounce rate</h2><div class="chart"><canvas id="b3"></canvas></div></div>
+      <div class="card"><h2>Conversion by special-day closeness</h2><div class="chart"><canvas id="b4"></canvas></div></div>
+    </div>
+  </section>
+
+  <section class="view" id="v-perf">
+    <div class="card"><h2>Query performance: collection scan vs index</h2>
+      <p class="note">Runs each query 300× on the loaded sessions in your browser (full scan vs a pre-built index). It simulates what an index does; it is not a MongoDB benchmark.</p>
+      <button class="btn" id="run" style="width:auto;padding:9px 18px;margin:0 0 12px">▶ Run benchmark</button>
+      <div class="scroll"><table><thead><tr><th>Query</th><th>Scan (ms)</th><th>Indexed (ms)</th><th>Speed-up</th><th></th></tr></thead><tbody id="pt"><tr><td colspan="5" style="color:var(--mute)">Press “Run benchmark”.</td></tr></tbody></table></div></div>
+    <div class="card" style="margin-top:12px"><h2>Same test in MongoDB</h2><pre>db.sessions.createIndex({ month: 1, visitorType: 1 })
+db.sessions.createIndex({ region: 1 })
+db.sessions.find({ month: "Nov", weekend: true })
+  .explain("executionStats")
+// compare: COLLSCAN (before) vs IXSCAN (after)
+// check totalDocsExamined vs nReturned</pre></div>
+  </section>
+
+  <section class="view" id="v-about">
+    <div class="card"><h2>Online Shopping Behaviour Analytics System</h2>
+    <p class="note" style="font-size:.9rem;line-height:1.6">A NoSQL (MongoDB) analytics project that studies how visitors behave in an online store and which sessions end in a purchase. Each browsing session is one document; the dashboard aggregates them by month, visitor type, region and behaviour.</p>
+    <pre>{ month: "Nov", visitorType: "New_Visitor", region: 3, weekend: false,
+  trafficType: 2, specialDay: 0.0,
+  administrative: 2, administrativeDuration: 40.5,
+  informational: 0, informationalDuration: 0,
+  productRelated: 31, productRelatedDuration: 1450.2,
+  bounceRate: 0.004, exitRate: 0.02, pageValues: 18.6,
+  revenue: true }</pre></div>
+    <div class="grid two">
+      <div class="card"><h2>How to use</h2><ul class="ins"><li>Pick filters in the sidebar and press <b>Apply Filters</b>.</li><li>Upload a CSV with the UCI “Online Shoppers Purchasing Intention” columns, or use the built-in sample.</li><li>Use <b>Performance Test</b> to show why indexes matter.</li></ul></div>
+      <div class="card"><h2>Stack</h2><ul class="ins"><li>Database: MongoDB (document model)</li><li>Backend: Node.js + Express (aggregation endpoints)</li><li>Frontend: this dashboard, Chart.js</li></ul></div>
+    </div>
+  </section>
+</main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+const MONTHS=['Feb','Mar','May','June','Jul','Aug','Sep','Oct','Nov','Dec'];
+const mi=m=>{const i=MONTHS.findIndex(x=>x.toLowerCase().slice(0,3)==String(m).toLowerCase().slice(0,3));return i<0?99:i};
+const PAL=['#1677e5','#22d3ee','#f59e0b','#ef4444','#22c55e','#a78bfa','#ec4899','#84cc16','#f97316'];
+Chart.defaults.color='#9aa4b8';Chart.defaults.borderColor='#1c212c';
+let s=11;const rnd=()=>((s=(s*9301+49297)%233280)/233280);
+const pick=a=>{const x=rnd()*a.reduce((t,i)=>t+i[1],0);let t=0;for(const i of a){t+=i[1];if(x<=t)return i[0]}return a[0][0]};
+function sample(n){
+  const mc={Feb:.016,Mar:.10,May:.11,June:.10,Jul:.15,Aug:.17,Sep:.19,Oct:.2,Nov:.25,Dec:.12};
+  const mw=[['Feb',.7],['Mar',15.5],['May',27.3],['June',2.3],['Jul',3.5],['Aug',3.5],['Sep',3.6],['Oct',4.5],['Nov',24.3],['Dec',14]];
+  const vt=[['Returning_Visitor',85.6,.14],['New_Visitor',13.7,.25],['Other',.7,.19]];
+  const rg=[[1,38.6],[2,9.2],[3,19.4],[4,9.6],[5,2.1],[6,6.5],[7,6.2],[8,3.5],[9,4.9]];
+  const tt=[[2,32],[1,20],[3,17],[4,9],[13,6],[10,3.5],[6,3.5],[8,2.8],[5,2],[11,2]];
+  const out=[];
+  for(let i=0;i<n;i++){
+    const M=pick(mw),v=pick(vt.map(x=>[x[0],x[1]])),vc=vt.find(x=>x[0]==v)[2],W=rnd()<.23;
+    const SD=rnd()<.9?0:[.2,.4,.6,.8,1][Math.floor(rnd()*5)];
+    const buy=rnd()<Math.min(.6,mc[M]*(vc/.15)*(W?1.1:1)*(SD>0?.55:1));
+    const P=Math.round(-Math.log(1-rnd())*(buy?42:26)),A=Math.round(-Math.log(1-rnd())*(buy?3.5:2)),I=rnd()<.75?0:Math.ceil(rnd()*3);
+    const B=buy?rnd()*.012:(rnd()<.45?0:rnd()*.2);
+    out.push({A,Ad:A*(30+rnd()*50),I,Id:I*(20+rnd()*60),P,Pd:P*(buy?55+rnd()*40:25+rnd()*45),B,E:Math.min(.2,B+(buy?rnd()*.02:rnd()*.06)),PV:buy?(rnd()<.85?3+rnd()*rnd()*70:0):(rnd()<.03?rnd()*30:0),SD,M,R:pick(rg),T:pick(tt),V:v,W,Rev:buy});
+  }
+  return out;
+}
+const SAMPLE=sample(12330);let DATA=SAMPLE,VIEW=SAMPLE,IDX={};
+const groupBy=(a,f)=>{const m=new Map();a.forEach(r=>{const k=f(r);if(!m.has(k))m.set(k,[]);m.get(k).push(r)});return m};
+const conv=a=>a.length?a.filter(r=>r.Rev).length/a.length:0;
+const avg=(a,k)=>a.length?a.reduce((t,r)=>t+r[k],0)/a.length:0;
+const pc=x=>(x*100).toFixed(1)+'%',fmt=n=>Math.round(n).toLocaleString('en-IN');
+const CH={};
+function mk(id,cfg){if(CH[id])CH[id].destroy();cfg.options=Object.assign({responsive:true,maintainAspectRatio:false},cfg.options||{});CH[id]=new Chart(document.getElementById(id),cfg)}
+const noLeg={plugins:{legend:{display:false}}},pctAxis={scales:{y:{ticks:{callback:v=>v+'%'}}}};
+let view='dashboard';
+const $=id=>document.getElementById(id);
+
+function buildFilters(){
+  const opt=(id,vals)=>$(id).innerHTML='<option>All</option>'+vals.map(v=>`<option>${v}</option>`).join('');
+  opt('fm',[...new Set(DATA.map(r=>r.M))].sort((a,b)=>mi(a)-mi(b)));
+  opt('fv',[...new Set(DATA.map(r=>r.V))].sort());
+  opt('fr',[...new Set(DATA.map(r=>r.R))].sort((a,b)=>a-b));
+  $('fw').value='All';$('fo').value='All';
+  IDX={m:groupBy(DATA,r=>r.M),v:groupBy(DATA,r=>r.V),r:groupBy(DATA,r=>r.R)};
+}
+function apply(){
+  const m=$('fm').value,v=$('fv').value,w=$('fw').value,r=$('fr').value,o=$('fo').value;
+  VIEW=DATA.filter(x=>(m=='All'||x.M==m)&&(v=='All'||x.V==v)&&(w=='All'||(w=='Weekend')==x.W)&&(r=='All'||String(x.R)==r)&&(o=='All'||(o=='Purchased')==x.Rev));
+  $('sum').textContent=`${fmt(VIEW.length)} of ${fmt(DATA.length)} sessions`;
+  $('side').classList.remove('open');render();
+}
+function render(){({dashboard,explorer,behaviour,perf:()=>{},about:()=>{}})[view]()}
+
+function dashboard(){
+  const n=VIEW.length,buy=VIEW.filter(r=>r.Rev).length;
+  const k=[['Total sessions',fmt(n)],['Purchases',fmt(buy),1],['Conversion rate',pc(conv(VIEW)),1],['Avg bounce rate',pc(avg(VIEW,'B'))],['Avg exit rate',pc(avg(VIEW,'E'))],['Avg page value',avg(VIEW,'PV').toFixed(2)],['Product pages / session',avg(VIEW,'P').toFixed(1)]];
+  $('kpis').innerHTML=k.map(x=>`<div class="card kpi ${x[2]?'hi':''}"><div class="l">${x[0]}</div><div class="v">${x[1]}</div></div>`).join('');
+  const gm=groupBy(VIEW,r=>r.M),ms=[...gm.keys()].sort((a,b)=>mi(a)-mi(b));
+  mk('d1',{data:{labels:ms,datasets:[{type:'bar',label:'Sessions',data:ms.map(m=>gm.get(m).length),backgroundColor:PAL[0],yAxisID:'y'},{type:'line',label:'Conversion %',data:ms.map(m=>+(conv(gm.get(m))*100).toFixed(1)),borderColor:PAL[1],backgroundColor:PAL[1],yAxisID:'y1',tension:.3}]},options:{scales:{y1:{position:'right',grid:{display:false},ticks:{callback:v=>v+'%'}}}}});
+  const gv=groupBy(VIEW,r=>r.V),vs=[...gv.keys()];
+  mk('d2',{type:'doughnut',data:{labels:vs,datasets:[{data:vs.map(v=>gv.get(v).length),backgroundColor:PAL,borderWidth:0}]},options:{plugins:{legend:{position:'bottom'}}}});
+  const gr=groupBy(VIEW,r=>r.R),rs=[...gr.keys()].sort((a,b)=>a-b);
+  mk('d3',{type:'bar',data:{labels:rs.map(r=>'Region '+r),datasets:[{data:rs.map(r=>+(conv(gr.get(r))*100).toFixed(1)),backgroundColor:PAL[4]}]},options:Object.assign({},noLeg,pctAxis)});
+  const wk=[true,false].map(w=>VIEW.filter(r=>r.W===w));
+  mk('d4',{type:'bar',data:{labels:['Weekend','Weekday'],datasets:[{label:'Purchased',data:wk.map(a=>a.filter(r=>r.Rev).length),backgroundColor:PAL[4]},{label:'Not purchased',data:wk.map(a=>a.filter(r=>!r.Rev).length),backgroundColor:'#3b4252'}]},options:{scales:{x:{stacked:true},y:{stacked:true}}}});
+  const ins=[];
+  const best=ms.filter(m=>gm.get(m).length>=50).sort((a,b)=>conv(gm.get(b))-conv(gm.get(a)))[0];
+  if(best)ins.push(`<b>${best}</b> has the best conversion (${pc(conv(gm.get(best)))}).`);
+  const bv=vs.filter(v=>gv.get(v).length>=50).sort((a,b)=>conv(gv.get(b))-conv(gv.get(a)))[0];
+  if(bv)ins.push(`<b>${bv.replace('_',' ')}</b> sessions convert at ${pc(conv(gv.get(bv)))} versus ${pc(conv(VIEW))} overall.`);
+  if(wk[0].length&&wk[1].length)ins.push(`Weekend sessions convert at ${pc(conv(wk[0]))}, weekday sessions at ${pc(conv(wk[1]))}.`);
+  const pv=VIEW.filter(r=>r.PV>0);if(pv.length)ins.push(`Sessions with a page value above 0 convert at ${pc(conv(pv))}; the rest at ${pc(conv(VIEW.filter(r=>!r.PV)))}.`);
+  $('ins').innerHTML=ins.join('').length?ins.map(x=>`<li>${x}</li>`).join(''):'<li>No sessions match the current filters.</li>';
+}
+function explorer(){
+  $('exh').textContent=`Sessions (showing ${Math.min(50,VIEW.length)} of ${fmt(VIEW.length)})`;
+  $('tb').innerHTML=VIEW.slice(0,50).map(r=>`<tr><td>${r.M}</td><td>${r.V.replace('_',' ')}</td><td>${r.R}</td><td>${r.W?'Yes':'No'}</td><td>${r.P}</td><td>${Math.round(r.Pd)}</td><td>${(r.B*100).toFixed(2)}%</td><td>${(r.E*100).toFixed(2)}%</td><td>${r.PV.toFixed(1)}</td><td><span class="tag ${r.Rev?'y':'n'}">${r.Rev?'Purchased':'No purchase'}</span></td></tr>`).join('')||'<tr><td colspan="10">No sessions match.</td></tr>';
+}
+function behaviour(){
+  const y=VIEW.filter(r=>r.Rev),nn=VIEW.filter(r=>!r.Rev);
+  mk('b1',{type:'bar',data:{labels:['Administrative','Informational','Product related'],datasets:[{label:'Purchased',data:[avg(y,'Ad'),avg(y,'Id'),avg(y,'Pd')].map(Math.round),backgroundColor:PAL[4]},{label:'Not purchased',data:[avg(nn,'Ad'),avg(nn,'Id'),avg(nn,'Pd')].map(Math.round),backgroundColor:PAL[3]}]}});
+  const I=1e9;
+  const pe=[[0,.0001],[.0001,10],[10,30],[30,I]];
+  mk('b2',{type:'bar',data:{labels:['0','0–10','10–30','30+'],datasets:[{data:pe.map(e=>+(conv(VIEW.filter(r=>r.PV>=e[0]&&r.PV<e[1]))*100).toFixed(1)),backgroundColor:PAL[0]}]},options:Object.assign({},noLeg,pctAxis)});
+  const be=[[0,.005],[.005,.01],[.01,.02],[.02,I]];
+  mk('b3',{type:'bar',data:{labels:['<0.5%','0.5–1%','1–2%','2%+'],datasets:[{data:be.map(e=>+(conv(VIEW.filter(r=>r.B>=e[0]&&r.B<e[1]))*100).toFixed(1)),backgroundColor:PAL[2]}]},options:Object.assign({},noLeg,pctAxis)});
+  const sd=[0,.2,.4,.6,.8,1];
+  mk('b4',{type:'bar',data:{labels:sd.map(String),datasets:[{data:sd.map(v=>+(conv(VIEW.filter(r=>r.SD===v))*100).toFixed(1)),backgroundColor:PAL[5]}]},options:Object.assign({},noLeg,pctAxis)});
+}
+function bench(){
+  const T=[['Month = "Nov"',()=>DATA.filter(r=>r.M==='Nov').length,()=>(IDX.m.get('Nov')||[]).length],
+   ['Month = "Nov" AND Weekend',()=>DATA.filter(r=>r.M==='Nov'&&r.W).length,()=>(IDX.m.get('Nov')||[]).filter(r=>r.W).length],
+   ['New visitors who purchased',()=>DATA.filter(r=>r.V==='New_Visitor'&&r.Rev).length,()=>(IDX.v.get('New_Visitor')||[]).filter(r=>r.Rev).length],
+   ['Conversion by region',()=>{const g=groupBy(DATA,r=>r.R);return[...g.values()].map(conv)},()=>[...IDX.r.values()].map(conv)]];
+  $('pt').innerHTML='<tr><td colspan="5">Running…</td></tr>';
+  setTimeout(()=>{
+    const rows=T.map(t=>{const t0=performance.now();for(let i=0;i<300;i++)t[1]();const a=(performance.now()-t0)/300;const t1=performance.now();for(let i=0;i<300;i++)t[2]();const b=(performance.now()-t1)/300;return[t[0],a,b]});
+    $('pt').innerHTML=rows.map(r=>{const x=r[1]/Math.max(r[2],1e-4);return`<tr><td>${r[0]}</td><td>${r[1].toFixed(3)}</td><td>${r[2].toFixed(3)}</td><td><b>${x.toFixed(1)}×</b></td><td><div class="bar"><i style="width:${Math.min(100,x*4)}%"></i></div></td></tr>`}).join('');
+  },30);
+}
+function csv(text,name){
+  const L=text.trim().split(/\r?\n/),h=L[0].split(',').map(x=>x.trim().toLowerCase());
+  const C={A:'administrative',Ad:'administrative_duration',I:'informational',Id:'informational_duration',P:'productrelated',Pd:'productrelated_duration',B:'bouncerates',E:'exitrates',PV:'pagevalues',SD:'specialday',M:'month',R:'region',T:'traffictype',V:'visitortype',W:'weekend',Rev:'revenue'};
+  const ix={};for(const k in C){ix[k]=h.indexOf(C[k]);if(ix[k]<0){$('status').textContent='Missing column: '+C[k];return}}
+  const t=x=>/^(true|1)$/i.test((x||'').trim()),num=x=>parseFloat(x)||0;
+  DATA=L.slice(1).filter(Boolean).map(l=>{const c=l.split(',');return{A:num(c[ix.A]),Ad:num(c[ix.Ad]),I:num(c[ix.I]),Id:num(c[ix.Id]),P:num(c[ix.P]),Pd:num(c[ix.Pd]),B:num(c[ix.B]),E:num(c[ix.E]),PV:num(c[ix.PV]),SD:num(c[ix.SD]),M:c[ix.M].trim(),R:num(c[ix.R]),T:c[ix.T].trim(),V:c[ix.V].trim(),W:t(c[ix.W]),Rev:t(c[ix.Rev])}});
+  document.querySelector('input[value=csv]').checked=true;
+  $('status').textContent=`Loaded ${fmt(DATA.length)} sessions from ${name}`;buildFilters();apply();
+}
+function setView(v){view=v;document.querySelectorAll('.view').forEach(e=>e.classList.toggle('on',e.id=='v-'+v));document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.v==v));$('title').textContent=document.querySelector('#nav button.on').textContent.replace(/^\S+\s*/,'');$('side').classList.remove('open');render()}
+$('nav').onclick=e=>{if(e.target.dataset.v)setView(e.target.dataset.v)};
+$('apply').onclick=apply;$('run').onclick=bench;
+$('pick').onclick=()=>$('file').click();
+$('file').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>csv(r.result,f.name);r.readAsText(f)};
+document.querySelectorAll('input[name=src]').forEach(x=>x.onchange=()=>{if(x.value=='sample'&&x.checked){DATA=SAMPLE;$('status').textContent='Using built-in sample data';buildFilters();apply()}else if(x.value=='csv')$('file').click()});
+$('dl').onclick=()=>{const h='Month,VisitorType,Region,Weekend,ProductRelated,ProductRelated_Duration,BounceRates,ExitRates,PageValues,Revenue';const b=new Blob([h+'\n'+VIEW.map(r=>[r.M,r.V,r.R,r.W,r.P,r.Pd.toFixed(1),r.B.toFixed(4),r.E.toFixed(4),r.PV.toFixed(2),r.Rev].join(',')).join('\n')],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='filtered_sessions.csv';a.click()};
+$('burger').onclick=()=>$('side').classList.toggle('open');
+$('status').textContent='Using built-in sample data';
+buildFilters();apply();
+</script>
+</body>
+</html>
